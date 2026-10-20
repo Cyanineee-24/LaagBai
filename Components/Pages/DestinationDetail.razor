@@ -1,0 +1,153 @@
+@page "/destinations/{Slug}"
+@implements IDisposable
+@inject QuoteState Quote
+@inject NavigationManager Nav
+
+@if (destination is { } d)
+{
+    <PageTitle>@d.Name · LaagBai</PageTitle>
+
+    <main>
+        <section class="max-w-[1280px] mx-auto px-5 md:px-10 pt-6">
+            <nav aria-label="Breadcrumb" class="flex items-center gap-2 text-[14px] font-semibold text-muted">
+                <a href="/explore" class="hover:text-teal">Explore</a><span>›</span><a href="@CebuData.RegionHref(d.Region)" class="hover:text-teal">@d.Region</a><span>›</span><span class="text-ink">@d.Name</span>
+            </nav>
+            <div class="relative mt-4 h-[420px] md:h-[560px] rounded-2xl overflow-hidden bg-teal">
+                <div class="absolute inset-0"><ImageSlot Src="@d.ImageUrl" Placeholder="@($"Hero photo: {d.PhotoCaption}")" /></div>
+                <div class="absolute inset-0 pointer-events-none bg-linear-to-t from-teal-shade/85 via-teal-shade/20 to-transparent"></div>
+                <div class="absolute left-0 right-0 bottom-0 p-6 md:p-12 pointer-events-none">
+                    <div class="flex gap-2">
+                        @foreach (var cat in d.Categories)
+                        {
+                            <span class="inline-flex items-center h-7 px-3 rounded-full text-[12px] font-bold @CebuData.Badge[cat]">@cat</span>
+                        }
+                    </div>
+                    <h1 class="mt-4 font-display font-semibold text-white text-[40px] md:text-[72px] tracking-tight leading-none">@d.Name</h1>
+                    <p class="mt-3 text-white/90 text-[16px] md:text-[19px] max-w-[620px]">@d.HeroIntro</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="max-w-[1280px] mx-auto px-5 md:px-10 pt-8">
+            <dl class="grid grid-cols-2 gap-3 @FactColumns(d.Facts.Count)">
+                @foreach (var fact in d.Facts)
+                {
+                    <div class="bg-white rounded-2xl border border-sand p-5">
+                        <dt class="text-[12px] font-bold uppercase tracking-[0.1em] text-muted">@fact.Label</dt>
+                        <dd class="mt-1.5 text-[16px] font-bold leading-snug">@fact.Value</dd>
+                    </div>
+                }
+            </dl>
+        </section>
+
+        <section class="max-w-[1280px] mx-auto px-5 md:px-10 pt-16 grid gap-10 lg:gap-12 items-start @(HasOfferings ? "lg:grid-cols-[1fr_380px]" : "")">
+            <div class="min-w-0">
+                <h2 class="font-display font-semibold text-[28px] md:text-[36px] tracking-tight">Highlights</h2>
+                <div class="mt-6 grid sm:grid-cols-2 gap-4">
+                    @foreach (var (h, i) in d.Highlights.Select((h, i) => (h, i)))
+                    {
+                        <div class="rounded-2xl bg-white border border-sand p-6">
+                            <span class="text-[13px] font-extrabold text-coral">@((i + 1).ToString("00"))</span>
+                            <h3 class="mt-2 font-display font-semibold text-[18px]">@h.Title</h3>
+                            <p class="mt-1.5 text-[15px] leading-relaxed text-body">@h.Body</p>
+                        </div>
+                    }
+                </div>
+
+                @if (HasOfferings)
+                {
+                    <h2 class="mt-16 font-display font-semibold text-[28px] md:text-[36px] tracking-tight">Book around @d.Name</h2>
+                    <OfferTabs Class="mt-6" Within="d" />
+                    <div class="mt-6 flex flex-col gap-4">
+                        @foreach (var o in d.OfferingsOfKind(Quote.Tab))
+                        {
+                            var on = o == Quote.Selected;
+                            <div class="rounded-2xl bg-white border-2 p-5 md:p-6 flex flex-col sm:flex-row gap-5 transition @(on ? "border-teal" : "border-transparent")">
+                                <div class="relative w-full sm:w-[160px] h-[150px] sm:h-[120px] shrink-0 rounded-xl overflow-hidden bg-mist">
+                                    <ImageSlot Src="@o.ImageUrl" Placeholder="@o.PhotoCaption" />
+                                </div>
+                                <div class="flex-1 min-w-0 flex flex-col gap-1.5">
+                                    <div class="flex flex-wrap gap-2"><span class="inline-flex items-center h-6 px-2.5 rounded-full text-[11px] font-bold bg-teal-tint text-teal">@o.Tag</span></div>
+                                    <h3 class="font-display font-semibold text-[19px]">@o.Name</h3>
+                                    <p class="text-[13px] font-semibold text-muted">@o.Provider.Name · <span class="text-star">★ @o.Rating</span> (@o.Reviews)</p>
+                                    <p class="text-[14px] text-body leading-relaxed">@o.Summary</p>
+                                </div>
+                                <div class="sm:text-right flex sm:flex-col items-center sm:items-end justify-between gap-3 shrink-0">
+                                    <div><p class="text-[22px] font-extrabold text-ink">@CebuData.Peso(o.Price)</p><p class="text-[13px] text-muted">per @o.PriceUnit</p></div>
+                                    <button type="button" @onclick="() => Quote.Choose(o)"
+                                            class="h-11 px-5 rounded-full text-[14px] font-bold cursor-pointer transition @(on ? "bg-teal text-white" : "border border-teal text-teal hover:bg-teal-tint")">@(on ? "In quote" : "Add to quote")</button>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+
+            @if (HasOfferings)
+            {
+                <QuoteCard />
+            }
+        </section>
+
+        @if (Nearby.Count > 0)
+        {
+            <section class="max-w-[1280px] mx-auto px-5 md:px-10 pt-20 pb-24">
+                <div class="flex items-end justify-between gap-6 flex-wrap">
+                    <h2 class="font-display font-semibold text-[28px] md:text-[36px] tracking-tight">More in @d.Region</h2>
+                    <a href="@CebuData.RegionHref(d.Region)" class="text-[15px] font-bold text-teal hover:text-teal-dark">See all in @d.Region →</a>
+                </div>
+                <div class="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    @foreach (var other in Nearby)
+                    {
+                        <DestinationCard Destination="other" ImageHeight="h-[200px]" Compact />
+                    }
+                </div>
+            </section>
+        }
+        else
+        {
+            <div class="pb-24"></div>
+        }
+    </main>
+}
+
+@code {
+    [Parameter] public string Slug { get; set; } = "";
+
+    private Destination? destination;
+    private List<Destination> Nearby = [];
+
+    private bool HasOfferings => destination?.Offerings.Any() == true;
+
+    protected override void OnInitialized() => Quote.Changed += OnChanged;
+
+    protected override void OnParametersSet()
+    {
+        destination = CebuData.GetDestination(Slug);
+        if (destination is null)
+        {
+            Nav.NotFound();
+            return;
+        }
+
+        Nearby = [.. CebuData.InSameRegion(destination, 3)];
+
+        // Keep the quote on something bookable here, staying on the current tab when this destination has it.
+        if (HasOfferings && !destination.Offerings.Contains(Quote.Selected))
+        {
+            var kind = destination.OfferingsOfKind(Quote.Tab).Any() ? Quote.Tab : destination.Offerings.First().Kind;
+            Quote.SetTab(kind, destination);
+        }
+    }
+
+    private static string FactColumns(int count) => count switch
+    {
+        <= 3 => "md:grid-cols-3",
+        4 => "md:grid-cols-4",
+        _ => "md:grid-cols-5",
+    };
+
+    private void OnChanged() => InvokeAsync(StateHasChanged);
+
+    public void Dispose() => Quote.Changed -= OnChanged;
+}

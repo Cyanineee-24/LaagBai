@@ -11,7 +11,7 @@
 
     <section class="max-w-[1280px] mx-auto px-5 md:px-10 pt-12">
         <div class="relative h-[460px] md:h-[440px] rounded-2xl overflow-hidden bg-teal">
-            <div class="absolute inset-0"><ImageSlot Id="sinulog-banner" Placeholder="Wide photo: Sinulog street dancers in costume" /></div>
+            <div class="absolute inset-0"><ImageSlot Src="images/sinulog.jpg" Placeholder="Wide photo: Sinulog street dancers in costume" /></div>
             <div class="absolute inset-0 pointer-events-none bg-linear-to-r from-teal-shade/90 via-teal-shade/55 to-transparent"></div>
             <div class="relative h-full p-7 md:p-14 flex flex-col justify-end md:justify-center max-w-[620px]">
                 <span class="inline-flex self-start items-center h-7 px-3 rounded-full text-[12px] font-bold bg-blush text-[#9a3a1b]">Every January · Cebu City</span>
@@ -19,7 +19,7 @@
                 <p class="mt-4 text-white/90 text-[16px] md:text-[18px] leading-relaxed">Held on the third Sunday of January in honour of the Santo Niño. Dancers in costume parade through the city to drums, ending near the Basilica.</p>
                 <div class="mt-7 flex flex-wrap gap-3">
                     <a href="/plan?tab=Stays" class="inline-flex items-center h-12 px-7 rounded-full bg-coral hover:bg-coral-hover text-ink font-bold transition">Find a stay for Sinulog</a>
-                    <a href="/explore?q=Basilica" class="inline-flex items-center h-12 px-7 rounded-full bg-white/15 hover:bg-white/25 backdrop-blur text-white font-bold transition border border-white/30">Basilica del Santo Niño</a>
+                    <a href="@CebuData.Get("basilica").Href" class="inline-flex items-center h-12 px-7 rounded-full bg-white/15 hover:bg-white/25 backdrop-blur text-white font-bold transition border border-white/30">Basilica del Santo Niño</a>
                 </div>
             </div>
         </div>
@@ -30,14 +30,14 @@
         <section class="max-w-[1280px] mx-auto pt-20">
             <div class="px-5 md:px-10 flex items-end justify-between gap-6 flex-wrap">
                 <div>
-                    <p class="text-[13px] font-bold uppercase tracking-[0.14em] text-teal">@col.Ids.Length places</p>
+                    <p class="text-[13px] font-bold uppercase tracking-[0.14em] text-teal">@col.Destinations.Count places</p>
                     <h2 class="mt-2 font-display font-semibold text-[30px] md:text-[40px] tracking-tight leading-tight">@col.Title</h2>
                     <p class="mt-2 text-[16px] text-body">@col.Tagline</p>
                 </div>
                 <a href="@col.MoreHref" class="text-[15px] font-bold text-teal hover:text-teal-dark">See all in Explore →</a>
             </div>
             <div class="mt-8 flex gap-6 overflow-x-auto snap-x snap-mandatory px-5 md:px-10 pb-4 scroll-px-5 md:scroll-px-10">
-                @foreach (var d in CebuData.Get(col.Ids))
+                @foreach (var d in col.Destinations)
                 {
                     <DestinationCard Destination="d" Class="snap-start shrink-0 w-[290px] sm:w-[340px] md:w-[370px]" />
                 }

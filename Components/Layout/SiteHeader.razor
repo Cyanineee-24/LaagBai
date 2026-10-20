@@ -42,11 +42,11 @@
 
     private bool menuOpen;
 
-    // The Kawasan Falls detail page lives under Explore.
+    // Destination pages live under Explore.
     private string ActiveSection => Nav.ToBaseRelativePath(Nav.Uri).Split('?', '#', '/')[0] switch
     {
         "" => "home",
-        "explore" or "kawasan-falls" => "explore",
+        "explore" or "destinations" => "explore",
         var other => other,
     };
 

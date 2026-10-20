@@ -316,6 +316,9 @@
   .inline-flex {
     display: inline-flex;
   }
+  .table {
+    display: table;
+  }
   .h-2\.5 {
     height: calc(var(--spacing) * 2.5);
   }
@@ -1219,6 +1222,9 @@
     }
     .md\:grid-cols-3 {
       grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .md\:grid-cols-4 {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
     }
     .md\:grid-cols-5 {
       grid-template-columns: repeat(5, minmax(0, 1fr));

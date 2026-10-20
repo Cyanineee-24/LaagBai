@@ -2,15 +2,21 @@
 @inject QuoteState Quote
 
 <div class="inline-flex p-1 rounded-full bg-sand @Class">
-    @foreach (var tab in CebuData.Tabs)
+    @foreach (var tab in Tabs)
     {
-        <button type="button" @onclick="() => Quote.SetTab(tab)"
+        <button type="button" @onclick="() => Quote.SetTab(tab, Within)"
                 class="h-11 px-5 md:px-6 rounded-full text-[15px] font-bold cursor-pointer transition @(Quote.Tab == tab ? "bg-white text-teal shadow-sm" : "text-body hover:text-ink")">@tab</button>
     }
 </div>
 
 @code {
     [Parameter] public string? Class { get; set; }
+
+    // Limits the tabs (and what each selects) to this destination's offerings.
+    [Parameter] public Destination? Within { get; set; }
+
+    private IEnumerable<string> Tabs =>
+        Within is null ? CebuData.Tabs : CebuData.Tabs.Where(t => Within.OfferingsOfKind(t).Any());
 
     protected override void OnInitialized() => Quote.Changed += OnChanged;
 

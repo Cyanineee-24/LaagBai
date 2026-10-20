@@ -1,9 +1,9 @@
 @inject IWebHostEnvironment Env
 
-@* Fills its positioned parent. Shows wwwroot/images/{Id}.webp when present, otherwise a captioned placeholder. *@
+@* Fills its positioned parent with Src (a .jpg, .png or .webp under wwwroot), or a captioned placeholder when there's no such file. *@
 @if (HasImage)
 {
-    <img src="@Assets[$"images/{Id}.webp"]" alt="@Placeholder" class="absolute inset-0 w-full h-full object-cover" />
+    <img src="@Assets[Src!]" alt="@Placeholder" class="absolute inset-0 w-full h-full object-cover" />
 }
 else
 {
@@ -18,19 +18,13 @@ else
 }
 
 @code {
-    [Parameter, EditorRequired] public string Id { get; set; } = "";
+    private static readonly string[] extensions = [".jpg", ".jpeg", ".png", ".webp"];
+
+    [Parameter] public string? Src { get; set; }
     [Parameter] public string Placeholder { get; set; } = "";
 
-    private static HashSet<string>? available;
-
-    private bool HasImage => Available(Env).Contains(Id);
-
-    private static HashSet<string> Available(IWebHostEnvironment env)
-    {
-        if (available is not null) return available;
-        var dir = Path.Combine(env.WebRootPath, "images");
-        return available = Directory.Exists(dir)
-            ? Directory.EnumerateFiles(dir, "*.webp").Select(Path.GetFileNameWithoutExtension).OfType<string>().ToHashSet()
-            : [];
-    }
+    private bool HasImage =>
+        !string.IsNullOrEmpty(Src)
+        && extensions.Contains(Path.GetExtension(Src), StringComparer.OrdinalIgnoreCase)
+        && Env.WebRootFileProvider.GetFileInfo(Src).Exists;
 }

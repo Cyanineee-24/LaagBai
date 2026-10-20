@@ -1,27 +1,38 @@
 namespace MySite.Models;
 
-public record Destination(
-    string Id,
-    string Name,
-    string Town,
-    string Region,
-    string Category,
-    string Tags,
-    string Travel,
-    string Blurb,
-    string Photo)
+public record Fact(string Label, string Value);
+
+public record Highlight(string Title, string Body);
+
+public class Destination : Listing
 {
-    // Kawasan has its own detail page; everything else opens a filtered Explore search.
-    public string Href => Id == "kawasan"
-        ? "/kawasan-falls"
-        : $"/explore?q={Uri.EscapeDataString(Name)}";
+    public required string Town { get; init; }
+    public required string Category { get; init; }
+    public required string Tags { get; init; }
+    public required string Travel { get; init; }
+
+    // Detail-page content, filled in by CebuData's static constructor.
+    public string? Intro { get; set; }
+    public string? SecondaryCategory { get; set; }
+    public List<Fact> Facts { get; } = [];
+    public List<Highlight> Highlights { get; } = [];
+
+    // Back-references, filled in by CebuData's static constructor.
+    public List<Tour> Tours { get; } = [];
+    public List<Stay> Stays { get; } = [];
+    public List<VehicleRental> Rentals { get; } = [];
+
+    public IEnumerable<Offering> Offerings => Tours.Concat<Offering>(Stays).Concat(Rentals);
+
+    public IEnumerable<Offering> OfferingsOfKind(string kind) => Offerings.Where(o => o.Kind == kind);
+
+    public string HeroIntro => Intro ?? Summary;
+
+    public IEnumerable<string> Categories =>
+        SecondaryCategory is null ? [Category] : [Category, SecondaryCategory];
+
+    public string Href => $"/destinations/{Slug}";
 
     public bool Matches(string query) =>
         $"{Name} {Town} {Tags} {Category}".Contains(query, StringComparison.OrdinalIgnoreCase);
 }
-
-public record RegionInfo(string Name, string Hub, string Description);
-
-public record Collection(string Title, string Tagline, string[] Ids, string MoreHref);
-
-public record PlanTile(string Kicker, string Title, string Body, string From, string Classes, string Href);

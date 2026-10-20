@@ -8,36 +8,31 @@ public class QuoteState
     public const int MinQty = 1;
     public const int MaxQty = 20;
 
-    public string Tab { get; private set; } = "Tours";
-    public Offer Selected { get; private set; } = CebuData.Offers["Tours"][0];
-    public int Qty { get; private set; } = 2;
+    public Offering Selected { get; private set; } = CebuData.Tours[0];
+    public int Qty { get; private set; } = CebuData.Tours[0].DefaultQuantity;
+
+    // The active tab always follows the selected offering.
+    public string Tab => Selected.Kind;
 
     public event Action? Changed;
 
-    public int Subtotal => Selected.Price * Qty;
-    public int Fee => Selected.Fee * Qty;
-    public int Total => Subtotal + Fee;
+    public decimal Subtotal => Selected.Subtotal(Qty);
+    public IEnumerable<QuoteLine> Adjustments => Selected.QuoteAdjustments(Qty);
+    public decimal Total => Selected.QuoteTotal(Qty);
 
-    public string UnitPlural => Selected.Unit switch
+    // Selects the first offering of that kind — site-wide, or only those linked to `within`.
+    public void SetTab(string kind, Destination? within = null)
     {
-        "person" => "Guests",
-        "night" => "Nights",
-        _ => "Days",
-    };
-
-    public void SetTab(string tab)
-    {
-        if (!CebuData.Offers.TryGetValue(tab, out var offers)) return;
-        Tab = tab;
-        Selected = offers[0];
-        Qty = tab == "Tours" ? 2 : 1;
+        var first = (within?.OfferingsOfKind(kind) ?? CebuData.OfferingsOf(kind)).FirstOrDefault();
+        if (first is null) return;
+        Selected = first;
+        Qty = Selected.DefaultQuantity;
         Changed?.Invoke();
     }
 
-    public void Choose(Offer offer)
+    public void Choose(Offering offering)
     {
-        Selected = offer;
-        Tab = CebuData.TabOf(offer);
+        Selected = offering;
         Changed?.Invoke();
     }
 

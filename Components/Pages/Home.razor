@@ -4,7 +4,7 @@
 
 <main>
     <section class="relative h-[620px] md:h-[680px] w-full overflow-hidden bg-teal">
-        <div class="absolute inset-0"><ImageSlot Id="home-hero" Placeholder="Hero photo: Moalboal coastline or Osmeña Peak at sunrise" /></div>
+        <div class="absolute inset-0"><ImageSlot Src="images/home-hero.webp" Placeholder="Hero photo: Moalboal coastline or Osmeña Peak at sunrise" /></div>
         <div class="absolute inset-0 pointer-events-none bg-linear-to-t from-teal-shade/85 via-teal-shade/35 to-transparent"></div>
         <div class="relative h-full max-w-[1280px] mx-auto px-5 md:px-10 flex flex-col justify-end pb-14 md:pb-20">
             <span class="inline-flex self-start items-center gap-2 h-8 px-3.5 rounded-full bg-white/15 backdrop-blur text-white text-[13px] font-semibold tracking-wide">Central Visayas, Philippines</span>
@@ -12,7 +12,7 @@
             <p class="mt-5 text-white/90 text-[17px] md:text-[20px] max-w-[560px] leading-relaxed">Sardine runs off Moalboal, turquoise canyons in Badian, a 1521 cross in the old port city. A guide to where to go across the island.</p>
             <div class="mt-8 flex flex-wrap gap-3">
                 <a href="/explore" class="inline-flex items-center h-12 px-7 rounded-full bg-coral hover:bg-coral-hover text-ink font-bold text-[16px] transition">Explore destinations</a>
-                <a href="/kawasan-falls" class="inline-flex items-center h-12 px-7 rounded-full bg-white/15 hover:bg-white/25 backdrop-blur text-white font-bold text-[16px] transition border border-white/30">See Kawasan Falls</a>
+                <a href="@CebuData.Get("kawasan").Href" class="inline-flex items-center h-12 px-7 rounded-full bg-white/15 hover:bg-white/25 backdrop-blur text-white font-bold text-[16px] transition border border-white/30">See Kawasan Falls</a>
             </div>
         </div>
     </section>

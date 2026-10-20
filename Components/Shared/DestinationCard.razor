@@ -1,6 +1,6 @@
 <a href="@Destination.Href" class="group bg-white rounded-2xl overflow-hidden border border-sand hover:shadow-[0_16px_40px_-16px_rgba(11,110,127,0.35)] transition flex flex-col @Class">
     <div class="relative @ImageHeight bg-mist">
-        <ImageSlot Id="@($"dest-{Destination.Id}")" Placeholder="@Destination.Photo" />
+        <ImageSlot Src="@Destination.ImageUrl" Placeholder="@Destination.PhotoCaption" />
         <span class="absolute top-4 left-4 inline-flex items-center h-7 px-3 rounded-full text-[12px] font-bold pointer-events-none @CebuData.Badge[Destination.Category]">@Destination.Category</span>
     </div>
     <div class="p-6 flex flex-col gap-2 flex-1">
@@ -8,13 +8,13 @@
         {
             <p class="text-[13px] font-semibold text-muted">@Destination.Town · @Destination.Travel</p>
             <h3 class="font-display font-semibold text-[20px] tracking-tight">@Destination.Name</h3>
-            <p class="text-[15px] leading-relaxed text-body">@Destination.Blurb</p>
+            <p class="text-[15px] leading-relaxed text-body">@Destination.Summary</p>
         }
         else
         {
             <p class="text-[13px] font-semibold text-muted">@Destination.Town · @Destination.Region</p>
             <h3 class="font-display font-semibold @TitleSize tracking-tight">@Destination.Name</h3>
-            <p class="text-[15px] leading-relaxed text-body">@Destination.Blurb</p>
+            <p class="text-[15px] leading-relaxed text-body">@Destination.Summary</p>
             <div class="mt-auto pt-4 flex items-center justify-between">
                 <span class="text-[14px] text-muted">@Destination.Travel</span>
                 <span class="text-[15px] font-bold text-teal">Details →</span>
