@@ -1,10 +1,52 @@
 @import "tailwindcss";
 @source "../Components/**/*.razor";
+@source "../Data/**/*.cs";
 
 @theme {
-  --color-primary: #38bdf8;
+  --font-sans: "Plus Jakarta Sans", system-ui, sans-serif;
+
+  --color-ink: #17302f;
+  --color-ink-deep: #0e1f1e;
+  --color-body: #46595a;
+  --color-muted: #5d6f6e;
+  --color-faint: #8a9796;
+
+  --color-teal: #0b6e7f;
+  --color-teal-dark: #085563;
+  --color-teal-deep: #08404a;
+  --color-teal-shade: #06323a;
+  --color-teal-tint: #e3f1f3;
+  --color-teal-wash: #f3fafa;
+  --color-mist: #e6efee;
+
+  --color-coral: #f4845f;
+  --color-coral-hover: #f27449;
+  --color-peach: #ffc2ab;
+  --color-blush: #ffe3d8;
+  --color-star: #c2541f;
+
+  --color-cream: #fbf7f0;
+  --color-sand: #efe7da;
+  --color-sand-light: #ece4d6;
+  --color-sand-dark: #e2d8c6;
+  --color-sand-hover: #f1ebdf;
+  --color-sand-dashed: #d9cdb8;
 }
 
-h1:focus {
-  outline: none;
+@utility font-display {
+  font-family: "Fraunces", Georgia, serif;
+  font-variation-settings: "SOFT" 50, "WONK" 0;
+}
+
+@layer base {
+  body {
+    background-color: var(--color-cream);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1:focus {
+    outline: none;
+  }
 }

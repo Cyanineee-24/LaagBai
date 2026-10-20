@@ -1,0 +1,20 @@
+@implements IDisposable
+@inject QuoteState Quote
+
+<div class="inline-flex p-1 rounded-full bg-sand @Class">
+    @foreach (var tab in CebuData.Tabs)
+    {
+        <button type="button" @onclick="() => Quote.SetTab(tab)"
+                class="h-11 px-5 md:px-6 rounded-full text-[15px] font-bold cursor-pointer transition @(Quote.Tab == tab ? "bg-white text-teal shadow-sm" : "text-body hover:text-ink")">@tab</button>
+    }
+</div>
+
+@code {
+    [Parameter] public string? Class { get; set; }
+
+    protected override void OnInitialized() => Quote.Changed += OnChanged;
+
+    private void OnChanged() => InvokeAsync(StateHasChanged);
+
+    public void Dispose() => Quote.Changed -= OnChanged;
+}

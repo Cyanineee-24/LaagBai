@@ -1,0 +1,65 @@
+@implements IDisposable
+@inject NavigationManager Nav
+
+<header class="sticky top-0 z-40 bg-cream/95 backdrop-blur border-b border-sand-light">
+    <div class="max-w-[1280px] mx-auto px-5 md:px-10 h-16 flex items-center justify-between gap-6">
+        <a href="/" class="flex items-center gap-2.5" aria-label="LaagBai home">
+            <span class="font-display font-bold text-[24px] leading-none tracking-tight"><span class="text-teal-dark">Laag</span><span class="text-coral">Bai</span></span>
+        </a>
+        <nav class="hidden md:flex items-center gap-1 text-[15px] font-semibold">
+            @foreach (var item in navItems)
+            {
+                <a href="@item.Href" class="px-4 py-2 rounded-full transition @NavClass(item.Key)">@item.Label</a>
+            }
+        </nav>
+        <div class="flex items-center gap-3 shrink-0 md:pl-6 md:border-l md:border-sand-dark">
+            <a href="/plan" class="hidden md:inline-flex items-center whitespace-nowrap shrink-0 h-11 px-5 rounded-full bg-coral hover:bg-coral-hover text-ink font-bold text-[15px] transition">Plan Your Trip</a>
+            <button type="button" @onclick="() => menuOpen = !menuOpen" aria-label="Menu" aria-expanded="@menuOpen"
+                    class="md:hidden w-11 h-11 rounded-full border border-sand-dark flex flex-col items-center justify-center gap-[5px] cursor-pointer">
+                <span class="w-5 h-[2px] bg-ink rounded"></span><span class="w-5 h-[2px] bg-ink rounded"></span><span class="w-5 h-[2px] bg-ink rounded"></span>
+            </button>
+        </div>
+    </div>
+    @if (menuOpen)
+    {
+        <div class="md:hidden border-t border-sand-light px-5 py-3 flex flex-col gap-1 font-semibold">
+            @foreach (var item in navItems)
+            {
+                <a href="@item.Href" class="flex items-center h-12 px-4 rounded-full @NavClass(item.Key)">@item.Label</a>
+            }
+            <a href="/plan" class="mt-2 flex items-center justify-center h-12 px-5 rounded-full bg-coral hover:bg-coral-hover text-ink font-bold">Plan Your Trip</a>
+        </div>
+    }
+</header>
+
+@code {
+    private static readonly (string Key, string Label, string Href)[] navItems =
+    [
+        ("home", "Home", "/"),
+        ("explore", "Explore", "/explore"),
+        ("highlights", "Highlights", "/highlights"),
+    ];
+
+    private bool menuOpen;
+
+    // The Kawasan Falls detail page lives under Explore.
+    private string ActiveSection => Nav.ToBaseRelativePath(Nav.Uri).Split('?', '#', '/')[0] switch
+    {
+        "" => "home",
+        "explore" or "kawasan-falls" => "explore",
+        var other => other,
+    };
+
+    private string NavClass(string key) =>
+        ActiveSection == key ? "bg-teal text-white" : "text-ink hover:bg-sand-hover";
+
+    protected override void OnInitialized() => Nav.LocationChanged += OnLocationChanged;
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        menuOpen = false;
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose() => Nav.LocationChanged -= OnLocationChanged;
+}

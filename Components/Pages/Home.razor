@@ -1,5 +1,100 @@
 ﻿@page "/"
 
-<div class="min-h-screen grid place-items-center bg-slate-900">
-    <h1 class="text-5xl font-bold text-primary">Tailwind works</h1>
-</div>
+<PageTitle>LaagBai · Where to go in Cebu</PageTitle>
+
+<main>
+    <section class="relative h-[620px] md:h-[680px] w-full overflow-hidden bg-teal">
+        <div class="absolute inset-0"><ImageSlot Id="home-hero" Placeholder="Hero photo: Moalboal coastline or Osmeña Peak at sunrise" /></div>
+        <div class="absolute inset-0 pointer-events-none bg-linear-to-t from-teal-shade/85 via-teal-shade/35 to-transparent"></div>
+        <div class="relative h-full max-w-[1280px] mx-auto px-5 md:px-10 flex flex-col justify-end pb-14 md:pb-20">
+            <span class="inline-flex self-start items-center gap-2 h-8 px-3.5 rounded-full bg-white/15 backdrop-blur text-white text-[13px] font-semibold tracking-wide">Central Visayas, Philippines</span>
+            <h1 class="mt-5 font-display font-semibold text-white tracking-tight leading-[1.02] text-[44px] sm:text-[64px] md:text-[88px] max-w-[900px]">Cebu: Sea, Summit &amp; Story</h1>
+            <p class="mt-5 text-white/90 text-[17px] md:text-[20px] max-w-[560px] leading-relaxed">Sardine runs off Moalboal, turquoise canyons in Badian, a 1521 cross in the old port city. A guide to where to go across the island.</p>
+            <div class="mt-8 flex flex-wrap gap-3">
+                <a href="/explore" class="inline-flex items-center h-12 px-7 rounded-full bg-coral hover:bg-coral-hover text-ink font-bold text-[16px] transition">Explore destinations</a>
+                <a href="/kawasan-falls" class="inline-flex items-center h-12 px-7 rounded-full bg-white/15 hover:bg-white/25 backdrop-blur text-white font-bold text-[16px] transition border border-white/30">See Kawasan Falls</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="max-w-[1280px] mx-auto px-5 md:px-10 -mt-10 relative z-10">
+        <div class="bg-white rounded-2xl shadow-[0_10px_40px_-12px_rgba(11,110,127,0.25)] p-3 grid grid-cols-2 sm:grid-cols-5 gap-2">
+            @foreach (var cat in CebuData.Categories)
+            {
+                <a href="/explore?cat=@cat" class="group flex flex-col items-start gap-1 rounded-xl px-4 py-4 hover:bg-teal-wash transition">
+                    <span class="w-2.5 h-2.5 rounded-full @CebuData.Dot[cat]"></span>
+                    <span class="mt-2 font-bold text-[16px] text-ink">@cat</span>
+                    <span class="text-[13px] text-muted">@CebuData.Destinations.Count(d => d.Category == cat) places</span>
+                </a>
+            }
+        </div>
+    </section>
+
+    <section class="max-w-[1280px] mx-auto px-5 md:px-10 pt-24">
+        <div class="flex items-end justify-between gap-6 flex-wrap">
+            <div>
+                <p class="text-[13px] font-bold uppercase tracking-[0.14em] text-teal">Featured</p>
+                <h2 class="mt-2 font-display font-semibold text-[32px] md:text-[44px] tracking-tight leading-tight">Start with these three</h2>
+            </div>
+            <a href="/explore" class="inline-flex items-center h-11 px-5 rounded-full border border-teal text-teal hover:bg-teal hover:text-white font-bold text-[15px] transition">View all destinations</a>
+        </div>
+        <div class="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            @foreach (var d in CebuData.Get("kawasan", "moalboal", "magellan"))
+            {
+                <DestinationCard Destination="d" ImageHeight="h-[240px]" TitleSize="text-[21px]" />
+            }
+        </div>
+    </section>
+
+    <section class="max-w-[1280px] mx-auto px-5 md:px-10 pt-24">
+        <p class="text-[13px] font-bold uppercase tracking-[0.14em] text-teal">Plan it your way</p>
+        <h2 class="mt-2 font-display font-semibold text-[32px] md:text-[44px] tracking-tight leading-tight max-w-[640px]">Book the parts you need, skip the rest</h2>
+        <div class="mt-10 grid grid-cols-1 md:grid-cols-3 gap-6">
+            @foreach (var t in CebuData.PlanTiles)
+            {
+                <a href="@t.Href" class="rounded-2xl p-7 md:p-8 flex flex-col gap-4 min-h-[260px] transition hover:-translate-y-1 @t.Classes">
+                    <span class="text-[13px] font-bold uppercase tracking-[0.12em] opacity-80">@t.Kicker</span>
+                    <h3 class="font-display font-semibold text-[26px] tracking-tight">@t.Title</h3>
+                    <p class="text-[15px] leading-relaxed opacity-90">@t.Body</p>
+                    <span class="mt-auto font-bold text-[15px]">@t.From →</span>
+                </a>
+            }
+        </div>
+    </section>
+
+    <section class="mt-24 bg-teal text-white">
+        <div class="max-w-[1280px] mx-auto px-5 md:px-10 py-20">
+            <div class="flex items-end justify-between gap-6 flex-wrap">
+                <div>
+                    <p class="text-[13px] font-bold uppercase tracking-[0.14em] text-peach">Regions</p>
+                    <h2 class="mt-2 font-display font-semibold text-[32px] md:text-[44px] tracking-tight leading-tight">One island, four ways in</h2>
+                </div>
+                <p class="text-white/80 max-w-[420px] text-[16px] leading-relaxed">Cebu runs about 200 km from tip to tip. Pick a base by region and day-trip from there.</p>
+            </div>
+            <div class="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                @foreach (var r in CebuData.Regions)
+                {
+                    <a href="@CebuData.RegionHref(r.Name)" class="rounded-2xl bg-white/10 hover:bg-white/15 border border-white/15 p-6 flex flex-col gap-3 transition">
+                        <span class="text-[13px] font-semibold text-peach">@r.Hub</span>
+                        <h3 class="font-display font-semibold text-[22px]">@r.Name</h3>
+                        <p class="text-[14px] leading-relaxed text-white/80">@r.Description</p>
+                        <span class="mt-2 text-[14px] font-bold">@CebuData.Destinations.Count(d => d.Region == r.Name) destinations →</span>
+                    </a>
+                }
+            </div>
+        </div>
+    </section>
+
+    <section class="max-w-[1280px] mx-auto px-5 md:px-10 py-24">
+        <div class="rounded-2xl bg-coral px-7 py-12 md:px-16 md:py-16 grid md:grid-cols-[1.4fr_1fr] gap-8 items-center">
+            <div>
+                <h2 class="font-display font-semibold text-[32px] md:text-[48px] tracking-tight leading-[1.05] text-ink">Dry season runs December to May.</h2>
+                <p class="mt-4 text-[17px] text-ink max-w-[520px] leading-relaxed">Lock in canyoneering slots and island boats early. Sinulog weekend in January fills Cebu City hotels months ahead.</p>
+            </div>
+            <div class="flex flex-col sm:flex-row md:flex-col lg:flex-row gap-3 md:justify-end">
+                <a href="/plan" class="inline-flex items-center justify-center h-12 px-7 rounded-full bg-ink hover:bg-ink-deep text-white font-bold transition">Start planning</a>
+                <a href="/plan" class="inline-flex items-center justify-center h-12 px-7 rounded-full bg-white/40 hover:bg-white/60 text-ink font-bold transition">Get a quote</a>
+            </div>
+        </div>
+    </section>
+</main>

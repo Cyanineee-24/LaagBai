@@ -1,0 +1,98 @@
+@page "/explore"
+
+<PageTitle>Explore · LaagBai</PageTitle>
+
+<main class="max-w-[1280px] mx-auto px-5 md:px-10 pt-12 pb-24">
+    <p class="text-[13px] font-bold uppercase tracking-[0.14em] text-teal">Explore</p>
+    <h1 class="mt-2 font-display font-semibold text-[36px] md:text-[56px] tracking-tight leading-[1.05]">Where to go in Cebu</h1>
+    <p class="mt-3 text-[17px] text-body max-w-[600px]">Filter by what you are after and which part of the island you are staying in.</p>
+
+    <div class="sticky top-16 z-30 mt-8 -mx-5 md:mx-0 px-5 md:px-0 py-4 bg-cream">
+        <div class="bg-white rounded-2xl border border-sand p-3 md:p-4 flex flex-col lg:flex-row gap-3 lg:items-center">
+            <div class="flex gap-2 overflow-x-auto lg:flex-wrap -mx-1 px-1 pb-1 lg:pb-0">
+                @foreach (var c in chips)
+                {
+                    <button type="button" @onclick="() => category = c" aria-pressed="@(category == c)"
+                            class="shrink-0 h-11 px-4 rounded-full text-[14px] font-bold cursor-pointer transition @(category == c ? "bg-teal text-white" : "bg-cream text-ink border border-sand-dark hover:border-teal")">@c</button>
+                }
+            </div>
+            <div class="flex gap-3 lg:ml-auto flex-col sm:flex-row">
+                <select @bind="region" aria-label="Region"
+                        class="h-11 px-4 pr-9 rounded-full border border-sand-dark bg-cream text-[14px] font-semibold text-ink cursor-pointer outline-none focus:border-teal">
+                    <option value="All">All regions</option>
+                    @foreach (var r in CebuData.Regions)
+                    {
+                        <option value="@r.Name">@r.Name</option>
+                    }
+                </select>
+                <input @bind="query" @bind:event="oninput" type="search" aria-label="Search destinations" placeholder="Search Moalboal, lechon, falls…"
+                       class="h-11 px-5 rounded-full border border-sand-dark bg-cream text-[14px] w-full sm:w-[260px] outline-none focus:border-teal placeholder:text-faint" />
+            </div>
+        </div>
+    </div>
+
+    <p class="mt-4 text-[14px] font-semibold text-muted">@ResultLabel</p>
+    <div class="mt-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        @foreach (var d in Results)
+        {
+            <DestinationCard Destination="d" />
+        }
+    </div>
+    @if (!Results.Any())
+    {
+        <div class="mt-6 rounded-2xl border border-dashed border-sand-dashed p-12 text-center">
+            <p class="font-bold text-[18px]">No matches</p>
+            <p class="mt-1 text-muted">Try another category or region.</p>
+            <button type="button" @onclick="ResetFilters" class="mt-5 h-11 px-5 rounded-full border border-teal text-teal font-bold cursor-pointer">Clear filters</button>
+        </div>
+    }
+</main>
+
+@code {
+    private static readonly string[] chips = ["All", .. CebuData.Categories];
+
+    [SupplyParameterFromQuery(Name = "cat")] public string? CategoryParam { get; set; }
+    [SupplyParameterFromQuery(Name = "region")] public string? RegionParam { get; set; }
+    [SupplyParameterFromQuery(Name = "q")] public string? QueryParam { get; set; }
+
+    private string category = "All";
+    private string region = "All";
+    private string query = "";
+
+    // Links from other pages pre-set the filters; after that they're local to the page.
+    protected override void OnParametersSet()
+    {
+        category = chips.Contains(CategoryParam) ? CategoryParam! : "All";
+        region = CebuData.Regions.Any(r => r.Name == RegionParam) ? RegionParam! : "All";
+        query = QueryParam ?? "";
+    }
+
+    private List<Destination> Results
+    {
+        get
+        {
+            var q = query.Trim();
+            return CebuData.Destinations
+                .Where(d => category == "All" || d.Category == category)
+                .Where(d => region == "All" || d.Region == region)
+                .Where(d => q.Length == 0 || d.Matches(q))
+                .ToList();
+        }
+    }
+
+    private string ResultLabel
+    {
+        get
+        {
+            var count = Results.Count;
+            return $"{count} {(count == 1 ? "destination" : "destinations")}{(region != "All" ? $" in {region}" : "")}";
+        }
+    }
+
+    private void ResetFilters()
+    {
+        category = "All";
+        region = "All";
+        query = "";
+    }
+}
