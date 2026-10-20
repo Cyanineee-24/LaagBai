@@ -1,0 +1,10 @@
+@import "tailwindcss";
+@source "../Components/**/*.razor";
+
+@theme {
+  --color-primary: #38bdf8;
+}
+
+h1:focus {
+  outline: none;
+}
